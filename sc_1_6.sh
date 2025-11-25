@@ -170,7 +170,7 @@ for pid_dir in /proc/[0-9]*/; do
     if [ -d "$pid_dir" ]; then
         pid=$(basename "$pid_dir")
         
- 	if awk -v check_pid="$pid" '$1 == check_pid {found=1} END {exit !found}' "$LOG_FILE" 2>/dev/null; then
+ 	      if awk -v check_pid="$pid" '$1 == check_pid {found=1} END {exit !found}' "$LOG_FILE" 2>/dev/null; then
             continue
         fi
 

@@ -47,7 +47,7 @@ rows_to_devices() {
 check_new() {
     local old_list="$1"  # Старый файл (форматированный)
     local new_list="$2"  # Новый файл (с разделителями |)
-    local show_header=true
+    local show_header=true # Выводить ли заголовок, если найдены новые устройства
     
     if [ ! -f "$old_list" ]; then
         echo "Старый файл не найден, все устройства новые"
@@ -74,7 +74,7 @@ check_new() {
             	echo "$header"
             	echo "bustype|vendor|product|version|name"
             	show_header=false
-	    fi
+	          fi
             echo "$bustype|$vendor|$product|$version|$name"
         fi
     done < "$new_list"
