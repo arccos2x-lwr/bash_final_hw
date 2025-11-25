@@ -1,7 +1,9 @@
 #!/bin/bash
 
 DIR_NAME=$(dirname "${BASH_SOURCE[0]}")
-LOG_FILE="$DIR_NAME/logs/log_1_1.log"
+LOG_DIR="$DIR_NAME/logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/log_1_1.log"
 
 NOW=$(date '+%d.%m.%Y %H:%M:%S')
 

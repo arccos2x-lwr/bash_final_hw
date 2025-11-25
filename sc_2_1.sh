@@ -1,7 +1,9 @@
 #!/bin/bash
 
 DIR_NAME=$(dirname "${BASH_SOURCE[0]}")
-LOG_FILE="$DIR_NAME/logs/log_2_1.log"
+LOG_DIR="$DIR_NAME/logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/log_2_1.log"
 
 NOW=$(date '+%d.%m.%Y %H:%M:%S')
 
@@ -20,8 +22,7 @@ rows_to_devices() {
         return 1
     fi
 
-    echo "Анализ устройств ввода:"
-    echo "======================"
+    echo "Список устройств ввода:"
 
     while IFS= read -r row; do
         case "$row" in

@@ -1,7 +1,9 @@
 #!/bin/bash
 
 DIR_NAME=$(dirname "${BASH_SOURCE[0]}")
-LOG_FILE="$DIR_NAME/logs/log_1_4.log"
+LOG_DIR="$DIR_NAME/logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/log_1_4.log"
 
 NOW=$(date '+%d.%m.%Y %H:%M:%S')
 
@@ -63,9 +65,9 @@ select_parameters() {
 get_process_info() {
     local pid=$1
     local params=("${@:2}")
-    local result="PID: $pid"
+    local result="$pid"
     name=$(grep "Name:" "/proc/$pid/status" | cut -f2 2>/dev/null || echo "N/A")
-    result+="|Name: $name"
+    result+="|$name"
     
     for param in "${params[@]}"; do
         case $param in
@@ -73,73 +75,73 @@ get_process_info() {
                 if [ -r "/proc/$pid/cmdline" ]; then
                     cmdline=$(tr '\0' ' ' < "/proc/$pid/cmdline" 2>/dev/null | head -c 100)
                     [ -z "$cmdline" ] && cmdline="[kernel process]"
-                    result+=" | Cmdline: ${cmdline:0:30}"
+                    result+="|${cmdline:0:30}"
                 else
-                    result+=" | Cmdline: N/A"
+                    result+="|N/A"
                 fi
                 ;;
             environ)
                 if [ -r "/proc/$pid/environ" ]; then
                     env_count=$(tr '\0' '\n' < "/proc/$pid/environ" 2>/dev/null | wc -l)
-                    result+=" | EnvVars: $env_count"
+                    result+="|$env_count"
                 else
-                    result+=" | Environ: N/A"
+                    result+="|N/A"
                 fi
                 ;;
             limits)
                 if [ -r "/proc/$pid/limits" ]; then
                     max_files=$(grep "Max open files" "/proc/$pid/limits" | awk '{print $4}' 2>/dev/null || echo "N/A")
-                    result+=" | MaxFiles: $max_files"
+                    result+="|$max_files"
                 else
-                    result+=" | Limits: N/A"
+                    result+="|N/A"
                 fi
                 ;;
             mounts)
                 if [ -r "/proc/$pid/mounts" ]; then
                     mounts_count=$(wc -l < "/proc/$pid/mounts" 2>/dev/null || echo "0")
-                    result+=" | Mounts: $mounts_count"
+                    result+="|$mounts_count"
                 else
-                    result+=" | Mounts: N/A"
+                    result+="|N/A"
                 fi
                 ;;
             status)
                 if [ -r "/proc/$pid/status" ]; then
                     state=$(grep "State:" "/proc/$pid/status" | cut -f2 2>/dev/null || echo "N/A")
-                    result+=" | State: $state"
+                    result+="|$state"
                 else
-                    result+=" | Status: N/A"
+                    result+="|N/A"
                 fi
                 ;;
             cwd)
                 if [ -e "/proc/$pid/cwd" ]; then
                     cwd=$(readlink "/proc/$pid/cwd" 2>/dev/null || echo "N/A")
-                    result+=" | CWD: $(basename "$cwd" 2>/dev/null)"
+                    result+="|$(basename "$cwd" 2>/dev/null)"
                 else
-                    result+=" | CWD: N/A"
+                    result+="|N/A"
                 fi
                 ;;
             fd)
                 if [ -d "/proc/$pid/fd" ]; then
                     fd_count=$(ls "/proc/$pid/fd" 2>/dev/null | wc -l)
-                    result+=" | FDCount: $fd_count"
+                    result+="|$fd_count"
                 else
-                    result+=" | FD: N/A"
+                    result+="|N/A"
                 fi
                 ;;
             fdinfo)
                 if [ -d "/proc/$pid/fdinfo" ]; then
                     fdinfo_count=$(ls "/proc/$pid/fdinfo" 2>/dev/null | wc -l)
-                    result+=" | FDInfo: $fdinfo_count"
+                    result+="|$fdinfo_count"
                 else
-                    result+=" | FDInfo: N/A"
+                    result+="|N/A"
                 fi
                 ;;
             root)
                 if [ -e "/proc/$pid/root" ]; then
                     root=$(readlink "/proc/$pid/root" 2>/dev/null || echo "N/A")
-                    result+=" | Root: $(basename "$root" 2>/dev/null)"
+                    result+="|$(basename "$root" 2>/dev/null)"
                 else
-                    result+=" | Root: N/A"
+                    result+="|N/A"
                 fi
                 ;;
         esac
@@ -159,10 +161,9 @@ else
     select_parameters
 fi
 
-
-echo $NOW > $LOG_FILE
-echo "PID|Name|$(IFS='|'; echo "${selected_params[*]}")" >> $LOG_FILE
-#column -t -s "|" "${selected_params[*]}"
+TEMP_FILE=$(mktemp)
+echo $NOW > $TEMP_FILE
+echo "PID|Name|$(IFS='|'; echo "${selected_params[*]}")" >> $TEMP_FILE
 
 counter=0
 for pid_dir in /proc/[0-9]*/; do
@@ -170,8 +171,11 @@ for pid_dir in /proc/[0-9]*/; do
         pid=$(basename "$pid_dir")
         
         process_info=$(get_process_info "$pid" "${selected_params[@]}")
-        echo "$process_info" | column -t -s " | " >> $LOG_FILE
+        echo "$process_info" >> $TEMP_FILE
         
         ((counter++))
     fi
 done
+
+cat "$TEMP_FILE" | column -t -s "|" > $LOG_FILE
+rm -f "$TEMP_FILE"

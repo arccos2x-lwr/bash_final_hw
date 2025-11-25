@@ -1,8 +1,9 @@
 #!/bin/bash
 
 DIR_NAME=$(dirname "${BASH_SOURCE[0]}")
-LOG_FILE="$DIR_NAME/logs/log_2_3.log"
-mkdir -p "$DIR_NAME/logs"
+LOG_DIR="$DIR_NAME/logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/log_2_3.log"
 
 NOW=$(date '+%d.%m.%Y %H:%M:%S')
 
@@ -109,4 +110,3 @@ else
 fi
 
 rm -f "$TEMP_FILE" "$TEMP_FILE2"
-#echo "Мониторинг завершен: $NOW, результаты в: $LOG_FILE"
