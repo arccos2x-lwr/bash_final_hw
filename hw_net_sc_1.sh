@@ -2,7 +2,7 @@
 PREFIX="${1:-NOT_SET}"
 INTERFACE="$2"
 
-# Функция для проверки привилегий root
+# Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё РїСЂРёРІРёР»РµРіРёР№ root
 check_root(){
 	if [[ "$EUID" -ne 0 ]]; then
 	echo "Please run as root"
@@ -10,7 +10,7 @@ check_root(){
 	fi
 }
 
-# Функция для проверки октета
+# Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё РѕРєС‚РµС‚Р°
 check_octet(){
   local octet="$1"
   local octet_name="$2"
@@ -23,7 +23,7 @@ check_octet(){
   return 0
 }
 
-# Функция для проверки существования интерфейса
+# Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ РёРЅС‚РµСЂС„РµР№СЃР°
 check_interface_exists() {
     local INTERFACE="$1"
     if ! ip link show "$INTERFACE" &> /dev/null; then
@@ -33,7 +33,7 @@ check_interface_exists() {
 }
 
 
-#основной обработчик
+#РѕСЃРЅРѕРІРЅРѕР№ РѕР±СЂР°Р±РѕС‚С‡РёРє
 main(){
   check_root
 
@@ -42,7 +42,7 @@ main(){
   SUBNET="${3:-ALL}"
   HOST="${4:-ALL}"
 
-  # help, чтоб не забыть/посмотреть
+  # help, С‡С‚РѕР± РЅРµ Р·Р°Р±С‹С‚СЊ/РїРѕСЃРјРѕС‚СЂРµС‚СЊ
   if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
       echo ""
       echo "<PREFIX> <INTERFACE> [SUBNET] [HOST]"
@@ -65,19 +65,19 @@ main(){
   fi
 
 
-  # Валидация PREFIX (формат: xxx.xxx)
+  # Р’Р°Р»РёРґР°С†РёСЏ PREFIX (С„РѕСЂРјР°С‚: xxx.xxx)
   if [[ ! "$PREFIX" =~ ^[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
     echo "\$PREFIX format must be xxx.xxx (example, 192.168)"
     exit 1
   fi
 
-  # Извлечение частей PREFIX для валидации
+  # РР·РІР»РµС‡РµРЅРёРµ С‡Р°СЃС‚РµР№ PREFIX РґР»СЏ РІР°Р»РёРґР°С†РёРё
   IFS='.' read -r PREFIX1 PREFIX2 <<< "$PREFIX"
   if ! check_octet "$PREFIX1" "\$PREFIX_1" || ! check_octet "$PREFIX2" "\$PREFIX_2"; then
     exit 1
   fi
 
-  # Проверка SUBNET
+  # РџСЂРѕРІРµСЂРєР° SUBNET
   SUBNET_START=1
   SUBNET_END=255
   if [[ "$SUBNET" != "ALL" ]]; then
@@ -88,7 +88,7 @@ main(){
     SUBNET_END="$SUBNET"
   fi
 
-  # Проверка SUBNET
+  # РџСЂРѕРІРµСЂРєР° SUBNET
     HOST_START=1
     HOST_END=255
     if [[ "$HOST" != "ALL" ]]; then

@@ -2,7 +2,7 @@
 PREFIX="${1:-NOT_SET}"
 INTERFACE="$2"
 
-# Функция для проверки привилегий root
+# Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё РїСЂРёРІРёР»РµРіРёР№ root
 check_root(){
 	if [[ "$EUID" -ne 0 ]]; then
 	echo "Please run as root"
@@ -10,7 +10,7 @@ check_root(){
 	fi
 }
 
-# Функция для проверки существования интерфейса
+# Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ РёРЅС‚РµСЂС„РµР№СЃР°
 check_interface_exists() {
     local INTERFACE="$1"
     if ! ip link show "$INTERFACE" &> /dev/null; then
@@ -20,14 +20,14 @@ check_interface_exists() {
 }
 
 
-#основной обработчик
+#РѕСЃРЅРѕРІРЅРѕР№ РѕР±СЂР°Р±РѕС‚С‡РёРє
 main(){
   check_root
 
   INTERFACE="$1"
   PREFIX=$(ip a | grep -oP 'inet \K[\d./]+24' | awk -F'[./]' '{print $1"."$2}')
 
-  # help, чтоб не забыть/посмотреть
+  # help, С‡С‚РѕР± РЅРµ Р·Р°Р±С‹С‚СЊ/РїРѕСЃРјРѕС‚СЂРµС‚СЊ
   if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
       echo ""
       echo "<INTERFACE>"
@@ -45,7 +45,7 @@ main(){
       exit 1
   fi
 
-  # Валидация PREFIX (формат: xxx.xxx)
+  # Р’Р°Р»РёРґР°С†РёСЏ PREFIX (С„РѕСЂРјР°С‚: xxx.xxx)
   if [[ ! "$PREFIX" =~ ^[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
     echo "PREFIX error"
     exit 1
